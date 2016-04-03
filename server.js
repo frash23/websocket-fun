@@ -5,6 +5,8 @@ const fs = require('fs');
 const http = require('http');
 const WebSocket = require('ws');
 
+const util = require('./util.js');
+
 /* Config is stored in a JS file for convenience for both end users and developers */
 var config = require('./config.js');
 const wroot = './client/';
@@ -28,14 +30,31 @@ var httpServer = http.createServer( (req, res)=> {
 });
 
 /* Create the actual websocket server */
-const ws = new WebSocket.Server({ server: httpServer, path: '/wss' });
+const ws = new WebSocket.Server({ server: httpServer, path: '/wss', perMessageDeflate: false });
+
+/* An array to let us keep track of connected sockets 
+ * wsIds<int id, WebSocket socket>*/
+var wsIds = {};
 
 /* Make it do stuff when a socket is connected */
 ws.on('connection', ws=> {
-	console.log('New connection: ', ws);
 
-	ws.on( 'message', msg=> console.log('message from ' + ws + ':', msg) );
+	/* Generate a unique id for and assign it to the socket id map as well as the ws object
+	 * The ID can safely be cast to a 32bit integer in case you need to store it in a compact
+	 * database with a constrained bit length */
+	var id;
+	do id = util.randomUint32(); while(wsIds[id]);
+	wsIds[id] = ws;
+	if(!ws.id) ws.id = id;
+	console.log( Object.keys(wsIds) );
+
+	//console.log('New connection: ', ws);
+	var array = new Float32Array(1024 * 1024);
+	for(let i=0; i<array.length; i++) array[i] = i/2;
+
+	ws.on( 'message', msg=> console.log('message from ' + ws.id + ':', msg) );
 	ws.send('Welcome to the team');
+	ws.send(array, { binary: true, compress: false, type: "ArrayBuffer" });
 });
 
 /* Listen the HTTP server on the values defined in the config */

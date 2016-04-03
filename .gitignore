@@ -3,3 +3,4 @@ node_modules/
 *~
 .dsyncignore
 
+npm-debug.log
