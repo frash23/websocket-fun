@@ -1,0 +1,21 @@
+{
+
+  "name": "websocket-fun",
+  "description": "Experimentation with websockets that may or may not lead anywhere",
+  "README": "README.md",
+  "repository": "frash23/websocket-fun",
+  "author": "Jacob Pedersen <jacob@bytesizedpacket.com> (https://jacobpedersen.me)",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "node server"
+  },
+
+  "dependencies": {
+    "bufferutil": "1.2.x",
+    "utf-8-validate": "1.2.x",
+    "ws": "1.0.x"
+  },
+
+  "engine": "node >= 5.0.0"
+
+}
