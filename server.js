@@ -30,7 +30,7 @@ var httpServer = http.createServer( (req, res)=> {
 });
 
 /* Create the actual websocket server */
-const ws = new WebSocket.Server({ server: httpServer, path: '/wss', perMessageDeflate: false });
+const ws = new WebSocket.Server({ server: httpServer, path: '/wss' });
 
 /* An array to let us keep track of connected sockets 
  * wsIds<int id, WebSocket socket>*/
@@ -52,9 +52,18 @@ ws.on('connection', ws=> {
 	var array = new Float32Array(1024 * 1024);
 	for(let i=0; i<array.length; i++) array[i] = i/2;
 
+	var header = util.constructTPCheader(69, { compress: true });
+	var testPacket = new Uint16Array([header, 87, 101, 108, 99, 111, 109, 101, 32, 116, 111, 32, 116, 104, 101, 32, 116, 101, 97, 109]);
+
 	ws.on( 'message', msg=> console.log('message from ' + ws.id + ':', msg) );
-	ws.send('Welcome to the team');
-	ws.send(array, { binary: true, compress: false, type: "ArrayBuffer" });
+	ws.send(testPacket, { binary: true });
+	//ws.send('Welcome to the team', { binary: true });
+	//ws.send(array, { binary: true, compress: true });
+	
+	ws.on('close', ()=> {
+		console.log('Client ' + id + ' has disconnected');
+		wsIds[id] = null;
+	});
 });
 
 /* Listen the HTTP server on the values defined in the config */

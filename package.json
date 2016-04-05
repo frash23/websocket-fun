@@ -13,7 +13,8 @@
   "dependencies": {
     "bufferutil": "1.2.x",
     "utf-8-validate": "1.2.x",
-    "ws": "1.0.x"
+    "ws": "1.0.x",
+	"lz-string": "1.4.x"
   },
 
   "engine": "node >= 5.0.0"
